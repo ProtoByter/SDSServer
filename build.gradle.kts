@@ -5,6 +5,7 @@ val logback_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.5.21"
+    antlr
 }
 
 group = "me.protobyte"
@@ -18,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    antlr("org.antlr:antlr4:4.5.1")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
