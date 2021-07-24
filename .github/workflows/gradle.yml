@@ -28,7 +28,9 @@ jobs:
       run: ./gradlew wrapper
       
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew distZip
       
-    - name: DEBUG List
-      run: ls -la **/**/**/** 
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        path: build/distributions/sdsserver*.zip
