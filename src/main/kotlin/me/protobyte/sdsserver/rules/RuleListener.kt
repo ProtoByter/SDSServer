@@ -11,20 +11,27 @@ class RuleListener: SDSRuleBaseListener() {
     }
 
     override fun enterBetween(ctx: SDSRuleParser.BetweenContext) {
-        rule.add(RulePart(RuleTypes.Between,getChildrenWithoutInst(ctx)))
+        rule.last().add(RulePart(RuleTypes.Between,getChildrenWithoutInst(ctx)))
     }
 
     override fun enterDisplay(ctx: SDSRuleParser.DisplayContext) {
-        rule.add(RulePart(RuleTypes.Display,getChildrenWithoutInst(ctx)))
+        rule.last().add(RulePart(RuleTypes.Display,getChildrenWithoutInst(ctx)))
     }
 
     override fun enterEvery(ctx: SDSRuleParser.EveryContext) {
-        rule.add(RulePart(RuleTypes.Every,getChildrenWithoutInst(ctx)))
+        rule.last().add(RulePart(RuleTypes.Every,getChildrenWithoutInst(ctx)))
     }
 
     override fun enterOn(ctx: SDSRuleParser.OnContext) {
-        rule.add(RulePart(RuleTypes.On,getChildrenWithoutInst(ctx)))
+        rule.last().add(RulePart(RuleTypes.On,getChildrenWithoutInst(ctx)))
     }
 
-    val rule: Rule = mutableListOf()
+    override fun enterSds_statement(ctx: SDSRuleParser.Sds_statementContext) {
+        rule.add(mutableListOf())
+    }
+
+
+
+    val rule: MutableList<Rule> = mutableListOf()
+
 }

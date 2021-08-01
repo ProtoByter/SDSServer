@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
-fun parse(rule: String): Rule {
+fun parse(rule: String): List<Rule> {
     val lexer = SDSRuleLexer(CharStreams.fromString(rule))
     val tokens = CommonTokenStream(lexer)
     val parser = SDSRuleParser(tokens)

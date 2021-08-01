@@ -8,9 +8,9 @@ internal class RulesKtTest {
 
     @Test
     fun ParseTest1() {
-        val test = parse("BETWEEN 08:00 16:00 DISPLAY image0.png ON screen0 EVERY 5m")
+        val test = parse("BETWEEN 08:00 16:00 DISPLAY image0.png ON screen0 EVERY 5m;")[0]
 
-        assertEquals(test,mutableListOf(
+        assertEquals(mutableListOf(
             RulePart(
                 RuleTypes.Between,
                 listOf("08:00","16:00")
@@ -27,14 +27,14 @@ internal class RulesKtTest {
                 RuleTypes.Every,
                 listOf("5m")
             )
-        ))
+        ),test)
     }
 
     @Test
     fun ParseTest2() {
-        val test = parse("DISPLAY image0.png ON screen0")
+        val test = parse("DISPLAY image0.png ON screen0;")[0]
 
-        assertEquals(test,mutableListOf(
+        assertEquals(mutableListOf(
             RulePart(
                 RuleTypes.Display,
                 listOf("image0.png")
@@ -43,14 +43,14 @@ internal class RulesKtTest {
                 RuleTypes.On,
                 listOf("screen0")
             )
-        ))
+        ),test)
     }
 
     @Test
     fun ParseTest3() {
-        val test = parse("EVERY 5m 00:00 DISPLAY image0.png")
+        val test = parse("EVERY 5m 00:00 DISPLAY image0.png;")[0]
 
-        assertEquals(test,mutableListOf(
+        assertEquals(mutableListOf(
             RulePart(
                 RuleTypes.Every,
                 listOf("5m","00:00")
@@ -59,6 +59,6 @@ internal class RulesKtTest {
                 RuleTypes.Display,
                 listOf("image0.png")
             )
-        ))
+        ),test)
     }
 }
