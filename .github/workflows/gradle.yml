@@ -28,7 +28,10 @@ jobs:
       run: ./gradlew wrapper
       
     - name: Build with Gradle
-      run: ./gradlew test distZip
+      run: ./gradlew distZip
+      
+    - name: Test with Gradle
+      run: ./gradlew test
       
     - name: Upload Artifact
       uses: actions/upload-artifact@v2.2.4
