@@ -8,10 +8,10 @@ plugins {
     antlr
 }
 
-group = "me.protobyte"
+group = "me.protobyte.sdsserver"
 version = "0.0.1"
 application {
-    mainClass.set("me.protobyte.ApplicationKt")
+    mainClass.set("me.protobyte.sdsserver.SDSServer")
 }
 
 repositories {
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    antlr("org.antlr:antlr4:4.5.1")
+    antlr("org.antlr:antlr4:4.9.2")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
@@ -29,6 +29,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.named("compileKotlin") { dependsOn("generateGrammarSource")}

@@ -24,3 +24,6 @@ hs_err_pid*
 
 # Don't remove gradle!
 !gradle/wrapper/gradle-wrapper.jar
+
+.idea/
+.gradle/
