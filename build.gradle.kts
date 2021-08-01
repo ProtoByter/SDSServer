@@ -6,6 +6,7 @@ plugins {
     application
     kotlin("jvm") version "1.5.21"
     antlr
+    id("com.adarshr.test-logger") version "3.0.0"
 }
 
 group = "me.protobyte.sdsserver"
