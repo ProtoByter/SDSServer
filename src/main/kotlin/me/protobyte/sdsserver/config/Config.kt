@@ -103,7 +103,7 @@ data class configJson(val clientID: String, val clientSecret: String, val applic
 object Config {
     fun load() {
         loadedUsers = parse(CharStreams.fromFileName("config/users.sdsu"))
-        loadedRules = parse_rule(CharStreams.fromFileName("config/rules.sdsu"))
+        loadedRules = parse_rule(CharStreams.fromFileName("config/rules.sdsr"))
         loadedConfig = Klaxon().parse<configJson>(FileReader("config/config.json").readText())!!
     }
 
