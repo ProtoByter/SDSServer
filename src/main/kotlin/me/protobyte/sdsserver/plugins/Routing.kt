@@ -74,7 +74,7 @@ fun Application.configureRouting() {
                 call.respondText("Not implemented yet")
             }
             else {
-                call.respond(401)
+                call.respond(HttpStatusCode.Forbidden)
             }
         }
 
@@ -83,7 +83,7 @@ fun Application.configureRouting() {
                 call.respondText(Json.encodeToString(Config.loadedRules))
             }
             else {
-                call.respond(401)
+                call.respond(HttpStatusCode.Forbidden)
             }
         }
 
@@ -92,7 +92,7 @@ fun Application.configureRouting() {
                 call.respondText(Json.encodeToString(clients))
             }
             else {
-                call.respond(401)
+                call.respond(HttpStatusCode.Forbidden)
             }
         }
 
@@ -101,7 +101,7 @@ fun Application.configureRouting() {
                 Config.reload()
             }
             else {
-                call.respond(401)
+                call.respond(HttpStatusCode.Forbidden)
             }
         }
     }
