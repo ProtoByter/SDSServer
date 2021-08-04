@@ -34,7 +34,7 @@ suspend fun checkUserOAuth(token: String, ip: NetworkAddress): Boolean {
             return false
         }
 
-        val id = (Parser.Companion.default().parse(meAPICall.readText()) as JsonObject)["id"] as String
+        val id = (Parser.default().parse(StringBuilder(meAPICall.readText())) as JsonObject)["id"] as String
         RuntimeState.oauth2IPs[ip] = OAuthEntry(id)
     }
 
