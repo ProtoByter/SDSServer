@@ -5,6 +5,7 @@ package me.protobyte.sdsserver.rules;
 }
 
 WS                  : [\t ]+ -> skip ;
+COMMENT             : '//' ~('\r' | '\n')* -> skip ;
 DISPLAY             : 'DISPLAY' ;
 ON                  : 'ON' ;
 BETWEEN             : 'BETWEEN' ;

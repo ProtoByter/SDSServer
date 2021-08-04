@@ -21,12 +21,16 @@ repositories {
 
 dependencies {
     antlr("org.antlr:antlr4:4.9.2")
+    implementation("com.beust:klaxon:5.5")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
     implementation("io.ktor:ktor-network-tls:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
+    implementation("io.ktor:ktor-client-serialization:$ktor_version")
+    implementation("io.ktor:ktor-server-sessions:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.google.code.gson:gson:2.8.2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
@@ -39,3 +43,7 @@ tasks.test {
 }
 
 tasks.named("compileKotlin") { dependsOn("generateGrammarSource")}
+
+dependencies {
+
+}

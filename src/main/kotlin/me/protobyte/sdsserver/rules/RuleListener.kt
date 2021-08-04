@@ -1,5 +1,8 @@
 package me.protobyte.sdsserver.rules
 
+import me.protobyte.sdsserver.config.Rule
+import me.protobyte.sdsserver.config.RulePart
+import me.protobyte.sdsserver.config.RuleTypes
 import org.antlr.v4.runtime.ParserRuleContext
 
 class RuleListener: SDSRuleBaseListener() {

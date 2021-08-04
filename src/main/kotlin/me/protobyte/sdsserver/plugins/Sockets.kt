@@ -5,6 +5,7 @@ import io.ktor.websocket.*
 import java.time.*
 import io.ktor.application.*
 import java.util.zip.Deflater
+import me.protobyte.sdsserver.config.*
 
 @OptIn(ExperimentalWebSocketExtensionApi::class)
 fun Application.configureSockets() {

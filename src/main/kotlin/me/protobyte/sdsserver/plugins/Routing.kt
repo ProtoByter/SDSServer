@@ -3,15 +3,32 @@ package me.protobyte.sdsserver.plugins
 import io.ktor.routing.*
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.client.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
+import io.ktor.response.*
+import io.ktor.sessions.*
 import io.ktor.util.network.*
 import io.ktor.websocket.*
 import kotlin.collections.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import me.protobyte.sdsserver.config.*
 
-data class ClientInfo(val _name: String, val _location: String) {
-    val name: String = _name
-    val location: String = _location
+@Serializable
+data class ClientInfo(val name: String, val location: String)
+
+suspend fun isAuthenticated(call: ApplicationCall): Boolean {
+    val userSession: UserSession? = call.sessions.get<UserSession>()
+    return if (userSession != null) {
+        checkUserOAuth(userSession.token, NetworkAddress(call.request.origin.remoteHost,call.request.origin.port))
+    }
+    else {
+        false
+    }
 }
 
 fun Application.configureRouting() {
@@ -41,9 +58,39 @@ fun Application.configureRouting() {
             }
         }
 
-        authenticate("auth-manage-digest") {
-            webSocket("/manage") {
+        authenticate("auth-manage-ouath") {
+            get("/login") {
 
+            }
+            get("/callback") {
+                val principal: OAuthAccessTokenResponse.OAuth2? = call.principal()
+                call.sessions.set(UserSession(principal?.accessToken.toString()))
+                call.respondRedirect("/getConfig")
+            }
+        }
+
+        post("/setConfig") {
+            call.respond(HttpStatusCode.InternalServerError)
+        }
+
+        get("/getConfig") {
+            if (isAuthenticated(call)) {
+                call.respondText(Json.encodeToString(Config.loadedRules))
+            }
+        }
+
+        get("/clientList") {
+            if (isAuthenticated(call)) {
+                call.respondText(Json.encodeToString(clients))
+            }
+            else {
+                call.respond(401)
+            }
+        }
+
+        post("/reload") {
+            if (isAuthenticated(call)) {
+                Config.reload()
             }
         }
     }

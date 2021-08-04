@@ -5,6 +5,7 @@ package me.protobyte.sdsserver.config;
 }
 
 WS                  : [\t\n\r ]+ -> skip ;
+COMMENT             : '//' ~('\r' | '\n')* -> skip ;
 ENTRY_START         : '{' ;
 ENTRY_END           : '}' ;
 SEPARATOR           : ',' ;
@@ -17,7 +18,6 @@ pw_entry            : 'P:' string ;
 digest              : 'D' ;
 oauth               : 'O' ;
 type_entry          : 'T:' ;
-type                : type_entry ( digest | oauth );
 
 combo_urp           : user_entry SEPARATOR realm_entry SEPARATOR pw_entry ;
 combo_upr           : user_entry SEPARATOR pw_entry SEPARATOR realm_entry ;
@@ -35,8 +35,17 @@ combo               :
                     | combo_pru ;
 
 
-entry_non_end       : ENTRY_START type SEPARATOR combo ENTRY_END SEPARATOR ;
 
-end_entry          :  ENTRY_START type SEPARATOR combo ENTRY_END ;
+d_entry_non_end     : ENTRY_START type_entry digest SEPARATOR combo ENTRY_END SEPARATOR ;
 
-entries             : entry_non_end* end_entry EOF ;
+d_end_entry         : ENTRY_START type_entry digest SEPARATOR combo ENTRY_END ;
+
+o_entry_non_end     : ENTRY_START type_entry oauth SEPARATOR user_entry ENTRY_END SEPARATOR ;
+
+o_entry_end         : ENTRY_START type_entry oauth SEPARATOR user_entry ENTRY_END ;
+
+entry_end           : ( d_end_entry | o_entry_end ) ;
+
+entry_non_end       : ( d_entry_non_end | o_entry_non_end ) ;
+
+entries             : entry_non_end* entry_end EOF ;
