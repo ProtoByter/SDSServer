@@ -1,9 +1,6 @@
 package me.protobyte.sdsserver.rules
 
-import me.protobyte.sdsserver.config.AuthListener
-import me.protobyte.sdsserver.config.SDSAuthLexer
-import me.protobyte.sdsserver.config.SDSAuthParser
-import me.protobyte.sdsserver.plugins.User
+import me.protobyte.sdsserver.config.*
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker

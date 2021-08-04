@@ -1,5 +1,7 @@
 package me.protobyte.sdsserver.rules
 
+import me.protobyte.sdsserver.config.RulePart
+import me.protobyte.sdsserver.config.RuleTypes
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

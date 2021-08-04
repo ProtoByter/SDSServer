@@ -70,12 +70,20 @@ fun Application.configureRouting() {
         }
 
         post("/setConfig") {
-            call.respond(HttpStatusCode.InternalServerError)
+            if (isAuthenticated(call)) {
+                call.respondText("Not implemented yet")
+            }
+            else {
+                call.respond(401)
+            }
         }
 
         get("/getConfig") {
             if (isAuthenticated(call)) {
                 call.respondText(Json.encodeToString(Config.loadedRules))
+            }
+            else {
+                call.respond(401)
             }
         }
 
@@ -91,6 +99,9 @@ fun Application.configureRouting() {
         post("/reload") {
             if (isAuthenticated(call)) {
                 Config.reload()
+            }
+            else {
+                call.respond(401)
             }
         }
     }

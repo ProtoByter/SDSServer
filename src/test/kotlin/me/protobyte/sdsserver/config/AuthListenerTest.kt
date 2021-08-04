@@ -1,7 +1,7 @@
 package me.protobyte.sdsserver.config
 
-import me.protobyte.sdsserver.plugins.User
-import me.protobyte.sdsserver.plugins.userTypes
+import me.protobyte.sdsserver.config.User
+import me.protobyte.sdsserver.config.userTypes
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
@@ -13,7 +13,7 @@ internal class AuthListenerTest {
 
     @Test
     fun getUsers() {
-        val lexer = SDSAuthLexer(CharStreams.fromString("{T:O,P:\"aaaa\",U:\"bbbb\",R:\"cccc\"},{T:D,P:\"aaaa\",U:\"bbbb\",R:\"cccc\"},{T:D,P:\"aaaa\",U:\"bbbb\",R:\"cccc\"}"))
+        val lexer = SDSAuthLexer(CharStreams.fromString("{T:O,U:\"bbbb\"},{T:D,P:\"aaaa\",U:\"bbbb\",R:\"cccc\"},{T:D,P:\"aaaa\",U:\"bbbb\",R:\"cccc\"}"))
         val tokens = CommonTokenStream(lexer)
         val parser = SDSAuthParser(tokens)
         parser.buildParseTree = true
@@ -21,7 +21,7 @@ internal class AuthListenerTest {
         val walker = ParseTreeWalker()
         val listener = AuthListener()
         walker.walk(listener, entryPoint)
-        val expected = listOf(User(userTypes.OAuth,"cccc","aaaa","bbbb"),User(userTypes.Digest,"cccc","aaaa","bbbb"),User(userTypes.Digest,"cccc","aaaa","bbbb"))
+        val expected = listOf(User(userTypes.OAuth,"","","bbbb"),User(userTypes.Digest,"cccc","aaaa","bbbb"),User(userTypes.Digest,"cccc","aaaa","bbbb"))
         assertEquals(expected,listener.users)
     }
 }
