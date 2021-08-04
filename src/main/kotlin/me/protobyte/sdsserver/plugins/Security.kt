@@ -45,17 +45,11 @@ suspend fun checkUserOAuth(token: String, ip: NetworkAddress): Boolean {
 }
 
 fun getUserDigest(username: String, realm: String): ByteArray? {
-    val users = parse(CharStreams.fromFileName("dist/users.sdsu")).toMutableList()
-    for (user in users) {
-        if (user.type == userTypes.OAuth) {
-	        users.remove(user)
-        }
-        else if (user.realm != realm) {
-            users.remove(user)
-        }
-    }
+    val users = Config.loadedUsers
 
-    val user = users.map{ it.username to it }.toMap()[username]
+    val user = users.filter { it.type == userTypes.Digest }
+                    .filter { it.realm == realm}
+                    .map{ it.username to it }.toMap()[username]
 
     return if (user == null) null else getSHA256Digest("${user.username}:${user.realm}:${user.password}")
 
