@@ -35,7 +35,7 @@ jobs:
       run: ./gradlew test
       
     - name: Upload Artifact
-      if: ${{ matrix.JDKVersion == "15" }}
+      if: ${{ matrix.JDKVersion == '15' }}
       uses: actions/upload-artifact@v2.2.4
       with:
         path: build/distributions/sdsserver*.zip
