@@ -90,7 +90,7 @@ object RuntimeState {
     var oauth2IPs: MutableMap<NetworkAddress,OAuthEntry> = mutableMapOf()
         get() {
             for (entry in field) {
-                if (entry.value.expiry.isAfter(LocalDateTime.now())) {
+                if (entry.value.expiry.isBefore(LocalDateTime.now())) {
                     field.remove(entry.key)
                 }
             }
