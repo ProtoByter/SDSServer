@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import java.io.FileReader
 import java.time.LocalDateTime
 import me.protobyte.sdsserver.rules.parse as parse_rule
+import kotlinx.serialization.*
 
 enum class userTypes {
     OAuth,
@@ -22,6 +23,7 @@ data class User(
     var username: String
 )
 
+@Serializable
 enum class RuleTypes {
     Between,
     Every,
@@ -29,6 +31,7 @@ enum class RuleTypes {
     Display
 }
 
+@Serializable
 data class RulePart(val type: RuleTypes, val args: List<String>)
 
 typealias Rule = MutableList<RulePart>

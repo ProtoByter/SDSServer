@@ -5,6 +5,7 @@ val logback_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.21"
     antlr
     id("com.adarshr.test-logger") version "3.0.0"
 }
