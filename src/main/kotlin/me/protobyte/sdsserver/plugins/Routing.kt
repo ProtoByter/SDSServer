@@ -34,8 +34,11 @@ suspend fun isAuthenticated(call: ApplicationCall): Boolean {
 
 suspend fun resolveResources(): ResolvedRules {
     val resolvedResources: MutableMap<String,ByteArray> = mutableMapOf()
-    val requireResolve = Config.loadedRules
-    requireResolve.forEach { it.filter { it.type == RuleTypes.On } }
+    val rules = Config.loadedRules
+    val requireResolve: MutableList<Rule> = mutableListOf()
+    for (rule in rules) {
+	    requireResolve.add(rule.filter { it.type == RuleTypes.Display } as Rule)
+    }
     requireResolve.forEach { it.forEach {
         resolvedResources[it.args[0]] = FileReader("config/${it.args[0]}").readText().toByteArray()
     } }
