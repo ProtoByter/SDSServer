@@ -17,6 +17,7 @@ import kotlinx.serialization.json.Json
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import me.protobyte.sdsserver.config.*
+import java.io.FileReader
 
 @Serializable
 data class ClientInfo(val name: String, val location: String)
@@ -29,6 +30,16 @@ suspend fun isAuthenticated(call: ApplicationCall): Boolean {
     else {
         false
     }
+}
+
+suspend fun resolveResources(): ResolvedRules {
+    val resolvedResources: MutableMap<String,ByteArray> = mutableMapOf()
+    val requireResolve = Config.loadedRules
+    requireResolve.forEach { it.filter { it.type == RuleTypes.On } }
+    requireResolve.forEach { it.forEach {
+        resolvedResources[it.args[0]] = FileReader("config/${it.args[0]}").readText().toByteArray()
+    } }
+    return ResolvedRules(Config.loadedRules, resolvedResources)
 }
 
 fun Application.configureRouting() {
@@ -78,9 +89,9 @@ fun Application.configureRouting() {
             }
         }
 
-        get("/getConfig") {
+        get("/getConfigO") {
             if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(Config.loadedRules))
+                call.respondText(Json.encodeToString(resolveResources()))
             }
             else {
                 call.respond(HttpStatusCode.Forbidden)
