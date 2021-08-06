@@ -64,7 +64,7 @@ fun Application.configureSecurity() {
     }
 
     install (Authentication) {
-        val signageRealm = "Access to the '/signage' path"
+        val signageRealm = "Access to the '/digest' path"
 
         digest("auth-signage-digest") {
             realm = signageRealm

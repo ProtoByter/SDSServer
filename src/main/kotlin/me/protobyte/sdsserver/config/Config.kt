@@ -113,7 +113,15 @@ object RuntimeState {
             }
             return field
         }
-}
+    var reloadExpiry: LocalDateTime = LocalDateTime.now().plusMinutes(5)
+    var needReload: Boolean = true
+        get() {
+            if (LocalDateTime.now().isAfter(reloadExpiry)) {
+                field = false
+            }
+            return field
+        }
+ }
 
 data class configJson(val clientID: String, val clientSecret: String, val applicationID: String)
 

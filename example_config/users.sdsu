@@ -1,2 +1,2 @@
 // REPLACE ME! - Currently and empty rule
-{T:D,U:"a",R:"b",P:"c"}
+{T:D,U:"a",R:"Access to the '/digest' path",P:"c"}

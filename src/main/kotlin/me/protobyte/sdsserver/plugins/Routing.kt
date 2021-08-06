@@ -13,6 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.protobyte.sdsserver.config.*
 import java.io.FileReader
+import java.time.LocalDateTime
 import kotlin.collections.*
 
 @Serializable
@@ -60,8 +61,13 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.OK,SuccessMessage("n/a"))
                 }
             }
+
             get("/digest/getConfig") {
-                call.respondText(Json.encodeToString(SuccessMessage(result=resolveResources())))
+                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage(result=resolveResources())))
+            }
+
+            get("/digest/needReload") {
+                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage(result=RuntimeState.needReload)))
             }
         }
 
@@ -89,7 +95,7 @@ fun Application.configureRouting() {
 
         get("/secure/getConfig") {
             if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(SuccessMessage(result=resolveResources())))
+                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage(result=resolveResources())))
             }
             else {
                 call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
@@ -105,10 +111,12 @@ fun Application.configureRouting() {
             }
         }
 
-        post("/cecure/reload") {
+        post("/secure/reload") {
             if (isAuthenticated(call)) {
                 try {
                     Config.reload()
+                    RuntimeState.reloadExpiry = LocalDateTime.now().plusMinutes(5)
+                    RuntimeState.needReload = true
                 }
                 catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError,Json.encodeToString(ErrorMessage(error="Internal Server Error. Couldn't reload configuration files, if you're the administrator then check that the configuration files are valid, and if you aren't the admin then please report this error to the admin")))
