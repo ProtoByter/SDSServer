@@ -1,24 +1,19 @@
 package me.protobyte.sdsserver.plugins
 
-import io.ktor.routing.*
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.client.*
 import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.*
 import io.ktor.response.*
+import io.ktor.routing.*
 import io.ktor.sessions.*
 import io.ktor.util.network.*
-import io.ktor.websocket.*
-import kotlin.collections.*
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import me.protobyte.sdsserver.config.*
 import java.io.FileReader
-import java.util.logging.ErrorManager
+import kotlin.collections.*
 
 @Serializable
 data class ClientInfo(val name: String, val location: String)
@@ -52,7 +47,7 @@ fun Application.configureRouting() {
 
     routing {
         authenticate("auth-signage-digest") {
-            post("/add") {
+            post("/digest/add") {
                 val name = call.request.queryParameters["name"]
                 val location = call.request.queryParameters["location"]
                 if (name == null || location == null) {
@@ -65,21 +60,25 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.OK,SuccessMessage("n/a"))
                 }
             }
-
+            get("/digest/getConfig") {
+                call.respondText(Json.encodeToString(SuccessMessage(result=resolveResources())))
+            }
         }
 
         authenticate("auth-manage-ouath") {
-            get("/login") {
+            get("/secure/login") {
 
             }
-            get("/callback") {
+            get("/secure/callback") {
                 val principal: OAuthAccessTokenResponse.OAuth2? = call.principal()
                 call.sessions.set(UserSession(principal?.accessToken.toString()))
-                call.respondRedirect("/getConfig")
+                call.respondRedirect("/secure/getConfig")
             }
         }
 
-        post("/setConfig") {
+        // Still secure since everything has a isAuthenticated call (which does OAuth2 authentication)
+
+        post("/secure/setConfig") {
             if (isAuthenticated(call)) {
                 call.respond(HttpStatusCode.NotImplemented,Json.encodeToString(ErrorMessage("This endpoint hasn't been implemented yet!"))
             }
@@ -88,7 +87,7 @@ fun Application.configureRouting() {
             }
         }
 
-        get("/getConfigO") {
+        get("/secure/getConfig") {
             if (isAuthenticated(call)) {
                 call.respondText(Json.encodeToString(SuccessMessage(result=resolveResources())))
             }
@@ -97,7 +96,7 @@ fun Application.configureRouting() {
             }
         }
 
-        get("/clientList") {
+        get("/secure/clientList") {
             if (isAuthenticated(call)) {
                 call.respondText(Json.encodeToString(SuccessMessage(result=clients)))
             }
@@ -106,7 +105,7 @@ fun Application.configureRouting() {
             }
         }
 
-        post("/reload") {
+        post("/cecure/reload") {
             if (isAuthenticated(call)) {
                 try {
                     Config.reload()
