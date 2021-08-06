@@ -18,6 +18,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import me.protobyte.sdsserver.config.*
 import java.io.FileReader
+import java.util.logging.ErrorManager
 
 @Serializable
 data class ClientInfo(val name: String, val location: String)
@@ -51,25 +52,20 @@ fun Application.configureRouting() {
 
     routing {
         authenticate("auth-signage-digest") {
-            webSocket("/signage") { // websocketSession
-                for (frame in incoming) {
-                    val text = (frame as? Frame.Text)!!.readText()
-                    when (text[0]) {
-                        'a' -> {
-                            val len1 = text[1].code
-                            val len2 = text[2].code
-                            val name = text.slice(2..2+len1)
-                            val location = text.slice(2+len1..2+len1+len2)
-                            clients[
-                                    NetworkAddress(this.call.request.origin.remoteHost,this.call.request.origin.port)
-                            ] = ClientInfo(name,location)
-                        }
-                        'c' -> {
-
-                        }
-                    }
+            post("/add") {
+                val name = call.request.queryParameters["name"]
+                val location = call.request.queryParameters["location"]
+                if (name == null || location == null) {
+                    call.respond(HttpStatusCode.BadRequest,ErrorMessage("Missing parameters"))
+                }
+                else {
+                    clients[
+                            NetworkAddress(call.request.origin.remoteHost, call.request.origin.port)
+                    ] = ClientInfo(name, location)
+                    call.respond(HttpStatusCode.OK,SuccessMessage("n/a"))
                 }
             }
+
         }
 
         authenticate("auth-manage-ouath") {
@@ -85,37 +81,43 @@ fun Application.configureRouting() {
 
         post("/setConfig") {
             if (isAuthenticated(call)) {
-                call.respondText("Not implemented yet")
+                call.respond(HttpStatusCode.NotImplemented,Json.encodeToString(ErrorMessage("This endpoint hasn't been implemented yet!"))
             }
             else {
-                call.respond(HttpStatusCode.Forbidden)
+                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
             }
         }
 
         get("/getConfigO") {
             if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(resolveResources()))
+                call.respondText(Json.encodeToString(SuccessMessage(result=resolveResources())))
             }
             else {
-                call.respond(HttpStatusCode.Forbidden)
+                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
             }
         }
 
         get("/clientList") {
             if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(clients))
+                call.respondText(Json.encodeToString(SuccessMessage(result=clients)))
             }
             else {
-                call.respond(HttpStatusCode.Forbidden)
+                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
             }
         }
 
         post("/reload") {
             if (isAuthenticated(call)) {
-                Config.reload()
+                try {
+                    Config.reload()
+                }
+                catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError,Json.encodeToString(ErrorMessage(error="Internal Server Error. Couldn't reload configuration files, if you're the administrator then check that the configuration files are valid, and if you aren't the admin then please report this error to the admin")))
+                }
+                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage("n/a")))
             }
             else {
-                call.respond(HttpStatusCode.Forbidden)
+                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
             }
         }
     }
