@@ -80,7 +80,7 @@ fun Application.configureRouting() {
 
         post("/secure/setConfig") {
             if (isAuthenticated(call)) {
-                call.respond(HttpStatusCode.NotImplemented,Json.encodeToString(ErrorMessage("This endpoint hasn't been implemented yet!"))
+                call.respond(HttpStatusCode.NotImplemented,Json.encodeToString(ErrorMessage("This endpoint hasn't been implemented yet!")))
             }
             else {
                 call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
