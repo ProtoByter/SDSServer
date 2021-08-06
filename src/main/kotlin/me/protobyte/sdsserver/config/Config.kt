@@ -11,6 +11,17 @@ import java.time.LocalDateTime
 import me.protobyte.sdsserver.rules.parse as parse_rule
 import kotlinx.serialization.*
 
+@Serializable
+open class BaseMessage(val success: Boolean)
+
+@Serializable
+data class ErrorMessage(val error: String) : BaseMessage(false)
+
+@Serializable
+data class SuccessMessage(
+    @Contextual val result: Any
+) : BaseMessage(true)
+
 enum class userTypes {
     OAuth,
     Digest
@@ -102,7 +113,15 @@ object RuntimeState {
             }
             return field
         }
-}
+    var reloadExpiry: LocalDateTime = LocalDateTime.now().plusMinutes(5)
+    var needReload: Boolean = true
+        get() {
+            if (LocalDateTime.now().isAfter(reloadExpiry)) {
+                field = false
+            }
+            return field
+        }
+ }
 
 data class configJson(val clientID: String, val clientSecret: String, val applicationID: String)
 

@@ -49,7 +49,7 @@ fun getUserDigest(username: String, realm: String): ByteArray? {
     val users = Config.loadedUsers
 
     val user = users.filter { it.type == userTypes.Digest }
-                    .filter { it.realm == realm}
+                    .filter { it.realm == realm }
                     .map{ it.username to it }.toMap()[username]
 
     return if (user == null) null else getSHA256Digest("${user.username}:${user.realm}:${user.password}")
@@ -64,7 +64,7 @@ fun Application.configureSecurity() {
     }
 
     install (Authentication) {
-        val signageRealm = "Access to the '/signage' path"
+        val signageRealm = "Access to the '/digest' path"
 
         digest("auth-signage-digest") {
             realm = signageRealm

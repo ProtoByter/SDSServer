@@ -11,7 +11,6 @@ class SDSServer {
             Config.load()
             embeddedServer(Netty, port = 17420, host = "0.0.0.0", watchPaths = listOf("classes")) {
                 configureSecurity()
-                configureSockets()
                 configureHTTP()
                 configureSessions()
                 configureRouting()
