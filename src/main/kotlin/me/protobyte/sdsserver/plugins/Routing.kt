@@ -30,7 +30,7 @@ suspend fun isAuthenticated(call: ApplicationCall): Boolean {
     }
 }
 
-suspend fun resolveResources(): ResolvedRules {
+fun resolveResources(): ResolvedRules {
     val resolvedResources: MutableMap<String,ByteArray> = mutableMapOf()
     val rules = Config.loadedRules
     val requireResolve: MutableList<Rule> = mutableListOf()
@@ -94,8 +94,8 @@ fun Application.configureRouting() {
                 else {
                     val newRules = Json.decodeFromString<ResolvedRules>(newConfig)
                     Config.writeRules(newRules)
+                    call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage("Successfully updated")))
                 }
-                call.respond(HttpStatusCode.NotImplemented,Json.encodeToString(ErrorMessage("This endpoint hasn't been implemented yet!")))
             }
             else {
                 call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))

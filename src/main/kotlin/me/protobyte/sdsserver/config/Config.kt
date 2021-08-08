@@ -138,8 +138,24 @@ object Config {
         load()
     }
 
-    fun writeRule(rule: Rule) {
+    fun writeRule(rule: Rule, file: File) {
+        var outRule = ""
+        for (rulePart in rule) {
+            outRule += when (rulePart.type) {
+                RuleTypes.On -> "ON"
+                RuleTypes.Between -> "BETWEEN"
+                RuleTypes.Display -> "DISPLAY"
+                RuleTypes.Every -> "EVERY"
+            }
 
+            var args = " "
+            rulePart.args.forEach { args += it }
+
+            outRule += args
+            outRule += " "
+        }
+        outRule += ";\n"
+        file.appendText(outRule)
     }
 
     fun writeResource(resource: Map.Entry<String,ByteArray>) {
@@ -148,11 +164,19 @@ object Config {
     }
 
     fun writeRules(newRules: ResolvedRules) {
+        // Clear the rule file
+        val ruleFile = File("config/rules.sdsr")
+        ruleFile.delete()
+        ruleFile.createNewFile()
+
+        // Write every resource
         for (entry in newRules.resources) {
             writeResource(entry)
         }
+
+        // Write all the rules
         for (entry in newRules.rules) {
-            writeRule(entry)
+            writeRule(entry, ruleFile)
         }
     }
 
