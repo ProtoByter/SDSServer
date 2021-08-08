@@ -53,22 +53,26 @@ fun Application.configureRouting() {
                 val name = call.request.queryParameters["name"]
                 val location = call.request.queryParameters["location"]
                 if (name == null || location == null) {
-                    call.respond(HttpStatusCode.BadRequest,ErrorMessage("Missing parameters"))
+                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.BadRequest
+                    ) { Json.encodeToString(ErrorMessage("Missing parameters")) }
                 }
                 else {
                     clients[
                             NetworkAddress(call.request.origin.remoteHost, call.request.origin.port)
                     ] = ClientInfo(name, location)
-                    call.respond(HttpStatusCode.OK,SuccessMessage("n/a"))
+                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
+                    ) { Json.encodeToString(SuccessMessage("n/a")) }
                 }
             }
 
             get("/digest/getConfig") {
-                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage(result=resolveResources())))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
+                ) { Json.encodeToString(SuccessMessage(result = resolveResources())) }
             }
 
             get("/digest/needReload") {
-                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage(result=RuntimeState.needReload)))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
+                ) { Json.encodeToString(SuccessMessage(result = RuntimeState.needReload)) }
             }
         }
 
@@ -93,25 +97,30 @@ fun Application.configureRouting() {
             if (isAuthenticated(call)) {
                 val newConfig = call.parameters["newConfig"]
                 if (newConfig == null) {
-                    call.respond(HttpStatusCode.BadRequest,Json.encodeToString(ErrorMessage("You did not provide any data to update with!")))
+                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.BadRequest
+                    ) { Json.encodeToString(ErrorMessage("You did not provide any data to update with!")) }
                 }
                 else {
                     val newRules = Json.decodeFromString<ResolvedRules>(newConfig)
                     Config.writeRules(newRules)
-                    call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage("Successfully updated")))
+                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
+                    ) { Json.encodeToString(SuccessMessage("Successfully updated")) }
                 }
             }
             else {
-                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
+                ) { Json.encodeToString(ErrorMessage(error = "Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")) }
             }
         }
 
         get("/secure/getConfig") {
             if (isAuthenticated(call)) {
-                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage(result=resolveResources())))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
+                ) { Json.encodeToString(SuccessMessage(result = resolveResources())) }
             }
             else {
-                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
+                ) { Json.encodeToString(ErrorMessage(error = "Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")) }
             }
         }
 
@@ -120,7 +129,8 @@ fun Application.configureRouting() {
                 call.respondText(Json.encodeToString(SuccessMessage(result=clients)))
             }
             else {
-                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
+                ) { Json.encodeToString(ErrorMessage(error = "Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")) }
             }
         }
 
@@ -132,12 +142,15 @@ fun Application.configureRouting() {
                     RuntimeState.needReload = true
                 }
                 catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError,Json.encodeToString(ErrorMessage(error="Internal Server Error. Couldn't reload configuration files, if you're the administrator then check that the configuration files are valid, and if you aren't the admin then please report this error to the admin")))
+                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.InternalServerError
+                    ) { Json.encodeToString(ErrorMessage(error = "Internal Server Error. Couldn't reload configuration files, if you're the administrator then check that the configuration files are valid, and if you aren't the admin then please report this error to the admin")) }
                 }
-                call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage("n/a")))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
+                ) { Json.encodeToString(SuccessMessage("n/a")) }
             }
             else {
-                call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))
+                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
+                ) { Json.encodeToString(ErrorMessage(error = "Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")) }
             }
         }
     }
