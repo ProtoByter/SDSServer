@@ -79,8 +79,12 @@ fun Application.configureRouting() {
             get("/secure/callback") {
                 val principal: OAuthAccessTokenResponse.OAuth2? = call.principal()
                 call.sessions.set(UserSession(principal?.accessToken.toString()))
-                call.respondRedirect("/secure/getConfig")
+                call.respondRedirect("/secure/")
             }
+        }
+
+        get("/secure/") {
+            call.respondText("Successfully authenticated")
         }
 
         // Still secure since everything has a isAuthenticated call (which checks OAuth2 authentication)

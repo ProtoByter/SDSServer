@@ -74,7 +74,7 @@ fun Application.configureSecurity() {
         }
 
         oauth("auth-manage-ouath") {
-            urlProvider = { "http://localhost:17420/callback" }
+            urlProvider = { "http://localhost:17420/secure/callback" }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "microsoft",
