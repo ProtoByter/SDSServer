@@ -10,6 +10,8 @@ import java.io.FileReader
 import java.time.LocalDateTime
 import me.protobyte.sdsserver.rules.parse as parse_rule
 import kotlinx.serialization.*
+import java.io.File
+import java.io.FileWriter
 
 @Serializable
 open class BaseMessage(val success: Boolean)
@@ -135,6 +137,25 @@ object Config {
     fun reload() {
         load()
     }
+
+    fun writeRule(rule: Rule) {
+
+    }
+
+    fun writeResource(resource: Map.Entry<String,ByteArray>) {
+        val file = File("config/${resource.key}")
+        file.writeBytes(resource.value)
+    }
+
+    fun writeRules(newRules: ResolvedRules) {
+        for (entry in newRules.resources) {
+            writeResource(entry)
+        }
+        for (entry in newRules.rules) {
+            writeRule(entry)
+        }
+    }
+
     var loadedUsers: List<User> = listOf()
     var loadedConfig: configJson = configJson("","", "")
     var loadedRules: List<Rule> = listOf()
