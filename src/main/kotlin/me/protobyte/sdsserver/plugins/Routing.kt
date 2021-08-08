@@ -9,6 +9,7 @@ import io.ktor.routing.*
 import io.ktor.sessions.*
 import io.ktor.util.network.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.protobyte.sdsserver.config.*
@@ -29,7 +30,7 @@ suspend fun isAuthenticated(call: ApplicationCall): Boolean {
     }
 }
 
-suspend fun resolveResources(): ResolvedRules {
+fun resolveResources(): ResolvedRules {
     val resolvedResources: MutableMap<String,ByteArray> = mutableMapOf()
     val rules = Config.loadedRules
     val requireResolve: MutableList<Rule> = mutableListOf()
@@ -82,11 +83,19 @@ fun Application.configureRouting() {
             }
         }
 
-        // Still secure since everything has a isAuthenticated call (which does OAuth2 authentication)
+        // Still secure since everything has a isAuthenticated call (which checks OAuth2 authentication)
 
         post("/secure/setConfig") {
             if (isAuthenticated(call)) {
-                call.respond(HttpStatusCode.NotImplemented,Json.encodeToString(ErrorMessage("This endpoint hasn't been implemented yet!")))
+                val newConfig = call.parameters["newConfig"]
+                if (newConfig == null) {
+                    call.respond(HttpStatusCode.BadRequest,Json.encodeToString(ErrorMessage("You did not provide any data to update with!")))
+                }
+                else {
+                    val newRules = Json.decodeFromString<ResolvedRules>(newConfig)
+                    Config.writeRules(newRules)
+                    call.respond(HttpStatusCode.OK,Json.encodeToString(SuccessMessage("Successfully updated")))
+                }
             }
             else {
                 call.respond(HttpStatusCode.Forbidden,Json.encodeToString(ErrorMessage(error="Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")))

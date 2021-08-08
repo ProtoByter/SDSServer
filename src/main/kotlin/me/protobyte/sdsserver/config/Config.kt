@@ -10,6 +10,8 @@ import java.io.FileReader
 import java.time.LocalDateTime
 import me.protobyte.sdsserver.rules.parse as parse_rule
 import kotlinx.serialization.*
+import java.io.File
+import java.io.FileWriter
 
 @Serializable
 open class BaseMessage(val success: Boolean)
@@ -135,6 +137,49 @@ object Config {
     fun reload() {
         load()
     }
+
+    fun writeRule(rule: Rule, file: File) {
+        var outRule = ""
+        for (rulePart in rule) {
+            outRule += when (rulePart.type) {
+                RuleTypes.On -> "ON"
+                RuleTypes.Between -> "BETWEEN"
+                RuleTypes.Display -> "DISPLAY"
+                RuleTypes.Every -> "EVERY"
+            }
+
+            var args = " "
+            rulePart.args.forEach { args += it }
+
+            outRule += args
+            outRule += " "
+        }
+        outRule += ";\n"
+        file.appendText(outRule)
+    }
+
+    fun writeResource(resource: Map.Entry<String,ByteArray>) {
+        val file = File("config/${resource.key}")
+        file.writeBytes(resource.value)
+    }
+
+    fun writeRules(newRules: ResolvedRules) {
+        // Clear the rule file
+        val ruleFile = File("config/rules.sdsr")
+        ruleFile.delete()
+        ruleFile.createNewFile()
+
+        // Write every resource
+        for (entry in newRules.resources) {
+            writeResource(entry)
+        }
+
+        // Write all the rules
+        for (entry in newRules.rules) {
+            writeRule(entry, ruleFile)
+        }
+    }
+
     var loadedUsers: List<User> = listOf()
     var loadedConfig: configJson = configJson("","", "")
     var loadedRules: List<Rule> = listOf()
