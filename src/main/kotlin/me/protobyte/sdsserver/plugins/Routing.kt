@@ -18,9 +18,6 @@ import java.io.FileReader
 import java.time.LocalDateTime
 import kotlin.collections.*
 
-@Serializable
-data class ClientInfo(val name: String, val location: String)
-
 suspend fun isAuthenticated(call: ApplicationCall): Boolean {
     val userSession: UserSession? = call.sessions.get<UserSession>()
     return if (userSession != null) {
@@ -45,9 +42,6 @@ fun resolveResources(): ResolvedRules {
 }
 
 fun Application.configureRouting() {
-
-    val clients: MutableMap<NetworkAddress, ClientInfo> = mutableMapOf()
-
     routing {
         authenticate("auth-signage-digest") {
             post("/digest/add") {
@@ -58,7 +52,7 @@ fun Application.configureRouting() {
                     ) { Json.encodeToString(ErrorMessage("Missing parameters")) }
                 }
                 else {
-                    clients[
+                    RuntimeState.clients[
                             NetworkAddress(call.request.origin.remoteHost, call.request.origin.port)
                     ] = ClientInfo(name, location)
                     call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
@@ -134,7 +128,7 @@ fun Application.configureRouting() {
 
         get("/secure/clientList") {
             if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(SuccessMessage(result = Json.encodeToString(clients))))
+                call.respondText(Json.encodeToString(SuccessMessage(result = Json.encodeToString(RuntimeState.clients))))
             }
             else {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
