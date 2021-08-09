@@ -15,7 +15,7 @@ fun parse(stream: CharStream): List<Rule> {
     val tokens = CommonTokenStream(lexer)
     val parser = SDSRuleParser(tokens)
     parser.buildParseTree = true
-    val entryPoint = parser.sds_statement()
+    val entryPoint = parser.sds_statements()
     val walker = ParseTreeWalker()
     val listener = RuleListener()
     walker.walk(listener,entryPoint)
