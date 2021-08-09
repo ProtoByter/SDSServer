@@ -149,7 +149,7 @@ object Config {
             }
 
             var args = " "
-            rulePart.args.forEach { args += it }
+            rulePart.args.forEach { args += "$it " }
 
             outRule += args
             outRule += " "
