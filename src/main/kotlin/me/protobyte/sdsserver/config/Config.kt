@@ -105,6 +105,9 @@ class AuthListener : SDSAuthBaseListener() {
 
 data class OAuthEntry(var id: String, var expiry: LocalDateTime = LocalDateTime.now().plusMinutes(5))
 
+@Serializable
+data class ClientInfo(val name: String, val location: String)
+
 object RuntimeState {
     var oauth2IPs: MutableMap<NetworkAddress,OAuthEntry> = mutableMapOf()
         get() {
@@ -123,6 +126,7 @@ object RuntimeState {
             }
             return field
         }
+    val clients: MutableMap<NetworkAddress, ClientInfo> = mutableMapOf()
  }
 
 data class configJson(val clientID: String, val clientSecret: String, val applicationID: String)
