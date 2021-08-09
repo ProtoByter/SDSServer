@@ -14,7 +14,6 @@ class SDSServer {
                 configureHTTP()
                 configureSessions()
                 configureRouting()
-                configureAdministration()
             }.start(wait = true)
         }
     }
