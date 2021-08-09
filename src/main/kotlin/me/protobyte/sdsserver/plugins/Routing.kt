@@ -4,6 +4,7 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
@@ -95,16 +96,23 @@ fun Application.configureRouting() {
 
         post("/secure/setConfig") {
             if (isAuthenticated(call)) {
-                val newConfig = call.parameters["newConfig"]
-                if (newConfig == null) {
+                val newConfig = call.receiveText()
+                if (newConfig == "") {
                     call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.BadRequest
                     ) { Json.encodeToString(ErrorMessage("You did not provide any data to update with!")) }
                 }
                 else {
-                    val newRules = Json.decodeFromString<ResolvedRules>(newConfig)
-                    Config.writeRules(newRules)
-                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                    ) { Json.encodeToString(SuccessMessage("Successfully updated")) }
+                    try {
+                        val newRules = Json.decodeFromString<ResolvedRules>(newConfig)
+                        Config.writeRules(newRules)
+                        call.respondText(
+                            contentType = ContentType.Application.Json, HttpStatusCode.OK
+                        ) { Json.encodeToString(SuccessMessage("Successfully updated")) }
+                    }
+                    catch (e: Exception) {
+                        call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.BadRequest
+                        ) { Json.encodeToString(ErrorMessage("You provided incorrect data to update with!")) }
+                    }
                 }
             }
             else {
