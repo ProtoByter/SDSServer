@@ -67,12 +67,12 @@ fun Application.configureRouting() {
 
             get("/digest/getConfig") {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage(result = resolveResources())) }
+                ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(resolveResources()))) }
             }
 
             get("/digest/needReload") {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage(result = RuntimeState.needReload)) }
+                ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(RuntimeState.needReload))) }
             }
         }
 
@@ -116,7 +116,7 @@ fun Application.configureRouting() {
         get("/secure/getConfig") {
             if (isAuthenticated(call)) {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage(result = resolveResources())) }
+                ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(resolveResources()))) }
             }
             else {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
@@ -126,7 +126,7 @@ fun Application.configureRouting() {
 
         get("/secure/clientList") {
             if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(SuccessMessage(result=clients)))
+                call.respondText(Json.encodeToString(SuccessMessage(result = Json.encodeToString(clients))))
             }
             else {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden

@@ -10,8 +10,8 @@ import java.io.FileReader
 import java.time.LocalDateTime
 import me.protobyte.sdsserver.rules.parse as parse_rule
 import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
 import java.io.File
-import java.io.FileWriter
 
 @Serializable
 open class BaseMessage(val success: Boolean)
@@ -20,8 +20,8 @@ open class BaseMessage(val success: Boolean)
 data class ErrorMessage(val error: String) : BaseMessage(false)
 
 @Serializable
-data class SuccessMessage(
-    @Contextual val result: Any
+class SuccessMessage(
+    val result: String
 ) : BaseMessage(true)
 
 enum class userTypes {
