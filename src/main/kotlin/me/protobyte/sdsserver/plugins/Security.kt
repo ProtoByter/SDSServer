@@ -17,7 +17,7 @@ import java.security.MessageDigest
 import kotlin.text.Charsets.UTF_8
 import me.protobyte.sdsserver.config.*
 
-fun getSHA256Digest(str: String): ByteArray = MessageDigest.getInstance("SHA256").digest(str.toByteArray(UTF_8))
+fun getMd5Digest(str: String): ByteArray = MessageDigest.getInstance("MD5").digest(str.toByteArray(UTF_8))
 
 suspend fun checkUserOAuth(token: String, ip: NetworkAddress): Boolean {
     if (ip !in RuntimeState.oauth2IPs) {
@@ -52,7 +52,7 @@ fun getUserDigest(username: String, realm: String): ByteArray? {
                     .filter { it.realm == realm }
                     .map{ it.username to it }.toMap()[username]
 
-    return if (user == null) null else getSHA256Digest("${user.username}:${user.realm}:${user.password}")
+    return if (user == null) null else getMd5Digest("${user.username}:${user.realm}:${user.password}")
 
 }
 
