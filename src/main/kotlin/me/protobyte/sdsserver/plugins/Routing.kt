@@ -44,22 +44,6 @@ fun resolveResources(): ResolvedRules {
 fun Application.configureRouting() {
     routing {
         authenticate("auth-signage-digest") {
-            post("/digest/add") {
-                val name = call.request.queryParameters["name"]
-                val location = call.request.queryParameters["location"]
-                if (name == null || location == null) {
-                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.BadRequest
-                    ) { Json.encodeToString(ErrorMessage("Missing parameters")) }
-                }
-                else {
-                    RuntimeState.clients[
-                            NetworkAddress(call.request.origin.remoteHost, call.request.origin.port)
-                    ] = ClientInfo(name, location)
-                    call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                    ) { Json.encodeToString(SuccessMessage("n/a")) }
-                }
-            }
-
             get("/digest/getConfig") {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
                 ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(resolveResources()))) }
@@ -119,16 +103,6 @@ fun Application.configureRouting() {
             if (isAuthenticated(call)) {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
                 ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(resolveResources()))) }
-            }
-            else {
-                call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
-                ) { Json.encodeToString(ErrorMessage(error = "Not authenticated. This endpoint requires OAuth authentication with MS Azure AAD")) }
-            }
-        }
-
-        get("/secure/clientList") {
-            if (isAuthenticated(call)) {
-                call.respondText(Json.encodeToString(SuccessMessage(result = Json.encodeToString(RuntimeState.clients))))
             }
             else {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
