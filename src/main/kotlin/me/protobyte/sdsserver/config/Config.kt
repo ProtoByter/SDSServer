@@ -41,7 +41,8 @@ enum class RuleTypes {
     Between,
     Every,
     On,
-    Display
+    Display,
+    At
 }
 
 @Serializable
@@ -146,6 +147,7 @@ object Config {
                 RuleTypes.Between -> "BETWEEN"
                 RuleTypes.Display -> "DISPLAY"
                 RuleTypes.Every -> "EVERY"
+                RuleTypes.At -> "AT"
             }
 
             var args = " "
