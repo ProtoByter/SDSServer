@@ -160,9 +160,9 @@ object Config {
         file.appendText(outRule)
     }
 
-    fun writeResource(resource: Map.Entry<String,ByteArray>) {
+    fun writeResource(resource: Map.Entry<String,String>) {
         val file = File("config/${resource.key}")
-        file.writeBytes(resource.value)
+        file.writeText(resource.value)
     }
 
     fun writeRules(newRules: ResolvedRules) {
