@@ -51,7 +51,7 @@ data class RulePart(val type: RuleTypes, val args: List<String>)
 typealias Rule = MutableList<RulePart>
 
 @Serializable
-data class ResolvedRules(val rules: List<Rule>, val resources: Map<String,ByteArray>)
+data class ResolvedRules(val rules: List<Rule>, val resources: Map<String,String>)
 
 fun getTextfromString(text: String): String {
     return text.trim { it <= '"'}

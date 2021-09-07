@@ -29,14 +29,14 @@ suspend fun isAuthenticated(call: ApplicationCall): Boolean {
 }
 
 fun resolveResources(): ResolvedRules {
-    val resolvedResources: MutableMap<String,ByteArray> = mutableMapOf()
+    val resolvedResources: MutableMap<String,String> = mutableMapOf()
     val rules = Config.loadedRules
     val requireResolve: MutableList<Rule> = mutableListOf()
     for (rule in rules) {
 	    requireResolve.add(rule.filter { it.type == RuleTypes.Display } as Rule)
     }
     requireResolve.forEach { it.forEach {
-        resolvedResources[it.args[0]] = FileReader("config/${it.args[0]}").readText().toByteArray()
+        resolvedResources[it.args[0]] = FileReader("config/${it.args[0]}").readText()
     } }
     return ResolvedRules(Config.loadedRules, resolvedResources)
 }
