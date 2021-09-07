@@ -8,15 +8,17 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
+import io.ktor.util.*
 import io.ktor.util.network.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.protobyte.sdsserver.config.*
+import java.io.File
 import java.io.FileReader
 import java.time.LocalDateTime
 import kotlin.collections.*
+import java.util.Base64
 
 suspend fun isAuthenticated(call: ApplicationCall): Boolean {
     val userSession: UserSession? = call.sessions.get<UserSession>()
@@ -36,7 +38,7 @@ fun resolveResources(): ResolvedRules {
 	    requireResolve.add(rule.filter { it.type == RuleTypes.Display } as Rule)
     }
     requireResolve.forEach { it.forEach {
-        resolvedResources[it.args[0]] = FileReader("config/${it.args[0]}").readText()
+        resolvedResources[it.args[0]] = Base64.getEncoder().encodeToString(File("config/${it.args[0]}").readBytes())
     } }
     return ResolvedRules(Config.loadedRules, resolvedResources)
 }
@@ -46,12 +48,12 @@ fun Application.configureRouting() {
         authenticate("auth-signage-digest") {
             get("/digest/getConfig") {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(resolveResources()))) }
+                ) { Json.encodeToString(SuccessRules(result = resolveResources())) }
             }
 
             get("/digest/needReload") {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(RuntimeState.needReload))) }
+                ) { Json.encodeToString(needReloadMessage(result = RuntimeState.needReload)) }
             }
         }
 
@@ -85,7 +87,7 @@ fun Application.configureRouting() {
                         Config.writeRules(newRules)
                         call.respondText(
                             contentType = ContentType.Application.Json, HttpStatusCode.OK
-                        ) { Json.encodeToString(SuccessMessage("Successfully updated")) }
+                        ) { Json.encodeToString(SuccessText("Successfully updated")) }
                     }
                     catch (e: Exception) {
                         call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.BadRequest
@@ -102,7 +104,7 @@ fun Application.configureRouting() {
         get("/secure/getConfig") {
             if (isAuthenticated(call)) {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage(result = Json.encodeToString(resolveResources()))) }
+                ) { Json.encodeToString(SuccessRules(result = resolveResources())) }
             }
             else {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden
@@ -122,7 +124,7 @@ fun Application.configureRouting() {
                     ) { Json.encodeToString(ErrorMessage(error = "Internal Server Error. Couldn't reload configuration files, if you're the administrator then check that the configuration files are valid, and if you aren't the admin then please report this error to the admin")) }
                 }
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.OK
-                ) { Json.encodeToString(SuccessMessage("n/a")) }
+                ) { Json.encodeToString(SuccessText("n/a")) }
             }
             else {
                 call.respondText(contentType = ContentType.Application.Json,HttpStatusCode.Forbidden

@@ -12,6 +12,7 @@ import me.protobyte.sdsserver.rules.parse as parse_rule
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.util.*
 
 @Serializable
 open class BaseMessage(val success: Boolean)
@@ -20,9 +21,22 @@ open class BaseMessage(val success: Boolean)
 data class ErrorMessage(val error: String) : BaseMessage(false)
 
 @Serializable
-class SuccessMessage(
+class SuccessRules(
+    val result: ResolvedRules
+) : BaseMessage(true)
+
+@Serializable
+class SuccessText(
     val result: String
 ) : BaseMessage(true)
+
+@Serializable
+class needReloadMessage(
+    val result: Boolean
+) : BaseMessage(true)
+
+@Serializable
+open class Message()
 
 enum class userTypes {
     OAuth,
@@ -162,7 +176,7 @@ object Config {
 
     fun writeResource(resource: Map.Entry<String,String>) {
         val file = File("config/${resource.key}")
-        file.writeText(resource.value)
+        file.writeBytes(Base64.getDecoder().decode(resource.value))
     }
 
     fun writeRules(newRules: ResolvedRules) {
