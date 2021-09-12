@@ -130,7 +130,7 @@ object RuntimeState {
             }
             return field
         }
-    var reloadExpiry: LocalDateTime = LocalDateTime.now().plusMinutes(5)
+    var reloadExpiry: LocalDateTime = LocalDateTime.now().plusSeconds(2)
     var needReload: Boolean = true
         get() {
             if (LocalDateTime.now().isAfter(reloadExpiry)) {
@@ -144,9 +144,27 @@ data class configJson(val clientID: String, val clientSecret: String, val applic
 
 object Config {
     fun load() {
-        loadedUsers = parse(CharStreams.fromFileName("config/users.sdsu"))
-        loadedRules = parse_rule(CharStreams.fromFileName("config/rules.sdsr"))
-        loadedConfig = Klaxon().parse<configJson>(FileReader("config/config.json").readText())!!
+        try {
+            loadedUsers = parse(CharStreams.fromFileName("config/users.sdsu"))
+            loadedRules = parse_rule(CharStreams.fromFileName("config/rules.sdsr"))
+            loadedConfig = Klaxon().parse<configJson>(FileReader("config/config.json").readText())!!
+        }
+        catch(e: Exception) {
+            println("Unable to open config files - error:${e.message}\nUsing default config")
+            loadedUsers = parse(CharStreams.fromString("""
+                {T:D,U:"a",R:"Access to the '/digest' path",P:"c"}
+            """.trimIndent()))
+            loadedRules = parse_rule(CharStreams.fromString("""
+                BETWEEN 08:00 16:00;
+            """.trimIndent()))
+            loadedConfig = Klaxon().parse<configJson>("""
+                        {
+                          "clientID" : "",
+                          "clientSecret" : "",
+                          "applicationID" : ""
+                        }
+                    """.trimIndent())!!
+        }
     }
 
     fun reload() {

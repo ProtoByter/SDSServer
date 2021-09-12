@@ -85,6 +85,8 @@ fun Application.configureRouting() {
                     try {
                         val newRules = Json.decodeFromString<ResolvedRules>(newConfig)
                         Config.writeRules(newRules)
+                        RuntimeState.reloadExpiry = LocalDateTime.now().plusSeconds(2)
+                        RuntimeState.needReload = true
                         call.respondText(
                             contentType = ContentType.Application.Json, HttpStatusCode.OK
                         ) { Json.encodeToString(SuccessText("Successfully updated")) }
