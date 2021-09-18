@@ -33,6 +33,10 @@ class RuleListener: SDSRuleBaseListener() {
         rule.last().add(RulePart(RuleTypes.At,getChildrenWithoutInst(ctx)))
     }
 
+    override fun enterTransition(ctx: SDSRuleParser.TransitionContext) {
+        rule.last().add(RulePart(RuleTypes.Transition,getChildrenWithoutInst(ctx)))
+    }
+
     override fun enterSds_statement(ctx: SDSRuleParser.Sds_statementContext) {
         rule.add(mutableListOf())
     }

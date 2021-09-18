@@ -56,7 +56,8 @@ enum class RuleTypes {
     Every,
     On,
     Display,
-    At
+    At,
+    Transition
 }
 
 @Serializable
@@ -180,6 +181,7 @@ object Config {
                 RuleTypes.Display -> "DISPLAY"
                 RuleTypes.Every -> "EVERY"
                 RuleTypes.At -> "AT"
+                RuleTypes.Transition -> "TRANSITION"
             }
 
             var args = " "

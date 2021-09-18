@@ -13,9 +13,10 @@ internal class RuleListenerTest {
     @Test
     fun getRule() {
         val lexer = SDSRuleLexer(CharStreams.fromString("""
-            BETWEEN 08:00 16:00 EVERY 5m 00:00 DISPLAY image0.png ON screen0;
+            BETWEEN 08:00 16:00 EVERY 5m 00:00 DISPLAY image0.png ON screen0 TRANSITION fade;
             ON screen0 DISPLAY image0.png;
-            EVERY 5m DISPLAY image0.png;
+            EVERY 5m DISPLAY image0.png TRANSITION fade;
+            ON screen0 AT 10:00 DISPLAY image0.png;
         """.trimIndent()))
         val tokens = CommonTokenStream(lexer)
         val parser = SDSRuleParser(tokens)
@@ -29,7 +30,8 @@ internal class RuleListenerTest {
                 RulePart(RuleTypes.Between,listOf("08:00","16:00")),
                 RulePart(RuleTypes.Every,listOf("5m","00:00")),
                 RulePart(RuleTypes.Display,listOf("image0.png")),
-                RulePart(RuleTypes.On,listOf("screen0"))
+                RulePart(RuleTypes.On,listOf("screen0")),
+                RulePart(RuleTypes.Transition, listOf("fade"))
             ),
             mutableListOf(
                 RulePart(RuleTypes.On,listOf("screen0")),
@@ -37,8 +39,14 @@ internal class RuleListenerTest {
             ),
             mutableListOf(
                 RulePart(RuleTypes.Every,listOf("5m")),
+                RulePart(RuleTypes.Display,listOf("image0.png")),
+                RulePart(RuleTypes.Transition, listOf("fade"))
+            ),
+            mutableListOf(
+                RulePart(RuleTypes.On,listOf("screen0")),
+                RulePart(RuleTypes.At,listOf("10:00")),
                 RulePart(RuleTypes.Display,listOf("image0.png"))
-            )
+            ),
         )
         assertEquals(expected,listener.rule)
     }

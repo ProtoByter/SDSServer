@@ -11,6 +11,7 @@ ON                  : 'ON' ;
 BETWEEN             : 'BETWEEN' ;
 EVERY               : 'EVERY' ;
 AT                  : 'AT' ;
+TRANSITION          : 'TRANSITION' ;
 DIGIT               : [0-9] ;
 DIGIT_6             : [0-6] ;
 TIME                : DIGIT DIGIT ':' DIGIT DIGIT ;
@@ -30,8 +31,9 @@ every               : EVERY period time
                     | EVERY period ;
 display             : DISPLAY name ;
 at                  : AT time ;
+transition          : TRANSITION name ;
 
-sds_rule            : ( on | between | every | display | at ) ;
+sds_rule            : ( on | between | every | display | at | transition ) ;
 
 sds_statement       : sds_rule+ sep ;
 
