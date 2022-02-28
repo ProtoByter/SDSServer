@@ -9,7 +9,7 @@ plugins {
     kotlin("jvm") version "1.5.31"
     kotlin("plugin.serialization") version "1.5.31"
     antlr
-    id("com.adarshr.test-logger") version "3.1.0"
+    id("com.adarshr.test-logger") version "3.2.0"
 }
 
 group = "me.protobyte.sdsserver"
