@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     antlr("org.antlr:antlr4:4.9.3")
-    implementation("com.beust:klaxon:5.5")
+    implementation("com.beust:klaxon:5.6")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
